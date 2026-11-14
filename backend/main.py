@@ -1,10 +1,16 @@
 from research_graph import graph
+
 from pydantic import BaseModel
+
 from uuid import uuid4
-from fastapi.responses import JSONResponse
 
-from fastapi import FastAPI,HTTPException
+import json
 
+from fastapi.responses import JSONResponse, StreamingResponse
+
+from fastapi.encoders import jsonable_encoder
+
+from fastapi import FastAPI, HTTPException
 
 app = FastAPI()
 
@@ -16,6 +22,107 @@ class ResearchRequest(BaseModel):
 class FeedbackRequest(BaseModel):
     action: str
     feedback: str = ""
+
+def stream_graph(input_state, config):
+
+    def event_generator():
+
+        # Send session ID first
+        yield f"data: {json.dumps({
+            'type': 'session',
+            'thread_id': config['configurable']['thread_id']
+        })}\n\n"
+
+        try:
+
+            for chunk in graph.stream(
+                input_state,
+                config=config,
+                stream_mode="tasks",
+                subgraphs=True,
+                version="v2"
+            ):
+
+                if chunk["type"] != "tasks":
+                    continue
+
+                data = chunk["data"]
+
+                # Node started
+                if "input" in data:
+
+                    event = {
+                        "type": "node",
+                        "node": data["name"],
+                        "status": "running",
+                        "namespace": chunk["ns"]
+                    }
+
+                # Node completed or failed
+                else:
+
+                    event = {
+                        "type": "node",
+                        "node": data["name"],
+                        "status": (
+                            "error" if data.get("error")
+                            else "completed"
+                        ),
+                        "namespace": chunk["ns"]
+                    }
+
+                yield f"data: {json.dumps(event, default=str)}\n\n"
+
+            # Graph execution finished or paused
+            snapshot = graph.get_state(config)
+
+            if "human_feedback" in snapshot.next:
+
+                event = {
+                    "type": "approval_required",
+                    "status": "waiting_for_approval",
+                    "analysts": jsonable_encoder(
+                        snapshot.values.get("analysts", [])
+                    )
+                }
+
+            elif snapshot.values.get("final_report"):
+
+                event = {
+                    "type": "graph_status",
+                    "status": "completed"
+                }
+
+            else:
+
+                event = {
+                    "type": "graph_status",
+                    "status": "finished"
+                }
+
+            yield f"data: {json.dumps(event)}\n\n"
+
+        except Exception as e:
+
+            event = {
+                "type": "error",
+                "message": str(e)
+            }
+
+            yield f"data: {json.dumps(event)}\n\n"
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no"
+        }
+    )
+
+
+
+
 @app.post("/research")
 def start_research(request: ResearchRequest):
 
@@ -27,23 +134,13 @@ def start_research(request: ResearchRequest):
         }
     }
 
-    try:
-        result = graph.invoke(
-            {
-                "topic": request.topic,
-                "max_analysts": request.max_analysts
-            },
-            config
-        )
-
-        return {
-            "thread_id": thread_id,
-            "status": "waiting_for_approval",
-            "analysts": result.get("analysts", [])
-        }
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return stream_graph(
+        {
+            "topic": request.topic,
+            "max_analysts": request.max_analysts
+        },
+        config
+)
 
 
 @app.post("/research/{thread_id}/feedback")
@@ -96,25 +193,7 @@ def submit_feedback(thread_id: str, request: FeedbackRequest):
             detail="Action must be approve or revise."
         )
 
-    # Resume existing graph
-    result = graph.invoke(None, config)
-
-    # Check whether graph paused again
-    snapshot = graph.get_state(config)
-
-    if "human_feedback" in snapshot.next:
-
-        return {
-            "thread_id": thread_id,
-            "status": "waiting_for_approval",
-            "analysts": snapshot.values.get("analysts", [])
-        }
-
-    return {
-        "thread_id": thread_id,
-        "status": "research_started",
-        "message": "Analysts approved. Research is now running."
-    }
+    return stream_graph(None, config)
 
 @app.get("/research/{thread_id}/status")
 def research_status(thread_id: str):
