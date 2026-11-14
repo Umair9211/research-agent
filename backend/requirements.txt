@@ -8,3 +8,4 @@ wikipedia
 langchain_tavily
 fastapi[standard]
 uvicorn
+ipython

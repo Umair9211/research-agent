@@ -37,11 +37,12 @@ def stream_graph(input_state, config):
     def event_generator():
 
         # Send session ID first
-        yield f"data: {json.dumps({
-            'type': 'session',
-            'thread_id': config['configurable']['thread_id']
-        })}\n\n"
+        event = {
+            "type": "session",
+            "thread_id": config["configurable"]["thread_id"]
+        }
 
+        yield f"data: {json.dumps(event)}\n\n"
         try:
 
             for chunk in graph.stream(
