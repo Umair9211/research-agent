@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
+const API_BASE_URL = import.meta.env.API_URL || 'http://localhost:8000'
 const DEFAULT_MAX_ANALYSTS = 3
 const EMPTY_GRAPH = { nodes: [], edges: [] }
 
@@ -210,7 +211,7 @@ function App() {
   useEffect(() => {
     const fetchGraphStructure = async () => {
       try {
-        const response = await fetch('/research/graph')
+        const response = await fetch(`${API_BASE_URL}/research/graph`)
         if (!response.ok) {
           throw new Error(`Graph request failed (${response.status})`)
         }
@@ -236,7 +237,7 @@ function App() {
     if (!currentThreadId) return
 
     try {
-      const response = await fetch(`/research/${currentThreadId}/report`)
+      const response = await fetch(`${API_BASE_URL}/research/${currentThreadId}/report`)
 
       if (!response.ok) {
         throw new Error(`Report request failed (${response.status})`)
@@ -372,7 +373,7 @@ function App() {
     appendMessage('user', cleanTopic)
 
     try {
-      const response = await fetch('/research', {
+      const response = await fetch(`${API_BASE_URL}/research`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -419,7 +420,7 @@ function App() {
     setNodeStateMap((prev) => ({ ...prev, human_feedback: 'completed' }))
 
     try {
-      const response = await fetch(`/research/${currentThreadId}/feedback`, {
+      const response = await fetch(`${API_BASE_URL}/research/${currentThreadId}/feedback`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
