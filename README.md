@@ -301,7 +301,6 @@ This project does not currently declare a license file. If you plan to share or 
 Possible enhancements include:
 
 - richer source citations and reference validation
-- PDF export improvements
 - persistent storage for research sessions
 - user authentication and saved research history
 - support for additional search providers
