@@ -1,0 +1,525 @@
+:root {
+  font-family: Inter, 'Segoe UI', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #0f172a;
+  background: #f5f7fb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(180deg, #eef4ff 0%, #f8fafc 100%);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.chatbot-panel {
+  width: min(900px, 100%);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #dfe7f5;
+  border-radius: 22px;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+.chatbot-header {
+  padding: 24px 26px 18px;
+  border-bottom: 1px solid #edf2f7;
+  background: rgba(248, 250, 252, 0.9);
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #4f46e5;
+}
+
+.chatbot-header h1 {
+  margin: 0;
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+}
+
+.workflow-panel {
+  margin: 0 22px 18px;
+  padding: 18px;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.workflow-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.workflow-header h3 {
+  margin: 0;
+}
+
+.workflow-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 122px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.workflow-status-badge--pending {
+  background: #edf2f7;
+  color: #475569;
+}
+
+.workflow-status-badge--running {
+  background: #fff7ed;
+  color: #9a5b00;
+}
+
+.workflow-status-badge--completed {
+  background: #ecfdf5;
+  color: #166534;
+}
+
+.workflow-status-badge--waiting {
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+.workflow-status-badge--failed {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.workflow-current-stage {
+  margin-bottom: 16px;
+  color: #475569;
+  font-size: 0.92rem;
+}
+
+.workflow-graph {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0 0;
+}
+
+.workflow-node-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.workflow-node {
+  min-width: 150px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: #edf2f7;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+.workflow-node strong {
+  font-size: 0.96rem;
+}
+
+.workflow-node span {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.workflow-node--pending {
+  background: #edf2f7;
+  color: #475569;
+  border-color: #d6e1ee;
+}
+
+.workflow-node--running {
+  background: #fff7ed;
+  color: #9a5b00;
+  border-color: #fdba74;
+}
+
+.workflow-node--completed {
+  background: #ecfdf5;
+  color: #166534;
+  border-color: #86efac;
+}
+
+.workflow-node--waiting {
+  background: #eef2ff;
+  color: #4338ca;
+  border-color: #c7d2fe;
+}
+
+.workflow-node--failed {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+.workflow-arrow {
+  color: #94a3b8;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.workflow-subgraph {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.workflow-subgraph h4 {
+  margin: 0 0 10px;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.workflow-subgraph-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.workflow-subgraph-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid #dbe3ef;
+  background: white;
+}
+
+.workflow-subgraph-pill--pending {
+  color: #475569;
+}
+
+.workflow-subgraph-pill--running {
+  background: #fff7ed;
+  border-color: #fdba74;
+  color: #9a5b00;
+}
+
+.workflow-subgraph-pill--completed {
+  background: #ecfdf5;
+  border-color: #86efac;
+  color: #166534;
+}
+
+.workflow-subgraph-pill--waiting {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  color: #4338ca;
+}
+
+.workflow-subgraph-pill--failed {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+.message {
+  max-width: 80%;
+  padding: 12px 14px;
+  border-radius: 16px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.message--user {
+  align-self: flex-end;
+  background: #2563eb;
+  color: #fff;
+}
+
+.message--bot {
+  align-self: flex-start;
+  background: #edf4ff;
+  color: #0f172a;
+}
+
+.message--error {
+  align-self: flex-start;
+  background: #fff1f2;
+  color: #b91c1c;
+  border: 1px solid #fecdd3;
+}
+
+.approval-box,
+.report-box {
+  margin: 0 22px 18px;
+  padding: 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+}
+
+.approval-box h3,
+.report-box h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.approval-box textarea {
+  width: 100%;
+  border: 1px solid #dbe3ef;
+  border-radius: 12px;
+  padding: 12px 14px;
+  resize: vertical;
+  min-height: 90px;
+  background: white;
+}
+
+.approval-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.approve-btn,
+.revise-btn,
+.send-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 11px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.approve-btn {
+  background: #16a34a;
+  color: white;
+}
+
+.revise-btn {
+  background: #f59e0b;
+  color: white;
+}
+
+.send-btn {
+  background: #2563eb;
+  color: white;
+  min-width: 140px;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.report-box-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.download-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: #1d4ed8;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.report-content {
+  color: #1f2937;
+  line-height: 1.85;
+}
+
+.report-content h1,
+.report-content h2,
+.report-content h3 {
+  margin: 1.1em 0 0.45em;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.report-content h1 {
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  margin-top: 0;
+}
+
+.report-content h2 {
+  font-size: clamp(1.25rem, 2vw, 1.8rem);
+}
+
+.report-content h3 {
+  font-size: 1.12rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.report-paragraph {
+  margin: 0 0 1em;
+  font-size: 1rem;
+}
+
+.report-divider {
+  border: none;
+  border-top: 1px solid #dfe7f5;
+  margin: 1.4em 0;
+}
+
+.report-list {
+  margin: 0 0 1em 1.3em;
+  padding: 0;
+}
+
+.report-list-item {
+  margin-bottom: 0.45em;
+  color: #334155;
+}
+
+.composer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px auto;
+  gap: 12px;
+  padding: 18px 22px 22px;
+  border-top: 1px solid #edf2f7;
+  background: rgba(248, 250, 252, 0.85);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.field input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #dbe3ef;
+  background: white;
+}
+
+.field--small input {
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .workflow-graph {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .workflow-node-wrap {
+    width: 100%;
+  }
+
+  .workflow-node {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .workflow-arrow {
+    display: none;
+  }
+
+  .report-box-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .composer {
+    grid-template-columns: 1fr;
+  }
+
+  .approval-actions {
+    flex-direction: column;
+  }
+
+  .message {
+    max-width: 92%;
+  }
+}
+
+@media print {
+  body {
+    background: white;
+  }
+
+  .chatbot-header,
+  .composer,
+  .approval-box,
+  .download-btn,
+  .message,
+  .workflow-panel {
+    display: none !important;
+  }
+
+  .app-shell {
+    padding: 0;
+  }
+
+  .chatbot-panel {
+    box-shadow: none;
+    border: none;
+    width: 100%;
+  }
+
+  .report-box {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: white;
+  }
+
+  .report-content {
+    font-size: 12pt;
+    color: black;
+  }
+}
