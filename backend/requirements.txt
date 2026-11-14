@@ -6,3 +6,5 @@ tavily-python
 dotenv 
 wikipedia
 langchain_tavily
+fastapi[standard]
+uvicorn
