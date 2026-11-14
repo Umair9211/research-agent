@@ -444,12 +444,7 @@ function App() {
   return (
     <main className="app-shell">
       <section className="chatbot-panel">
-        <header className="chatbot-header">
-          <div>
-            <p className="eyebrow">Research workflow</p>
-            <h1>Current state</h1>
-          </div>
-        </header>
+        
 
         <WorkflowGraph
           graph={workflowGraph}
